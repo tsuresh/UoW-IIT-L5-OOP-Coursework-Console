@@ -1,14 +1,14 @@
 package controllers;
 
 import interfaces.RentalVehicleManager;
-import models.Car;
-import models.MotorBike;
 import models.Vehicle;
-import models.VehicleType;
 import utils.DatabaseUtil;
 
-import javax.xml.crypto.Data;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class WestminsterRentalVehicleManager implements RentalVehicleManager {
@@ -30,13 +30,7 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
     private boolean syncDB() {
         try {
-            for(Object object : DatabaseUtil.getCollection(Constants.VEHICLES)){
-                if(object.getClass().getField(Constants.TYPE).equals(VehicleType.CAR)){
-                    vehicleList.add((Car) object);
-                } else if(object.getClass().getField(Constants.TYPE).equals(VehicleType.MOTORBIKE)){
-                    vehicleList.add((MotorBike) object);
-                }
-            }
+            setVehicleList(DatabaseUtil.getCollection(Constants.VEHICLES));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,7 +52,7 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
     @Override
     public boolean deleteVehicle(Vehicle vehicle) {
-        if(DatabaseUtil.deleteData(Constants.VEHICLES, vehicle.getPlateNo())){
+        if (DatabaseUtil.deleteData(Constants.VEHICLES, vehicle.getPlateNo())) {
             vehicleList.remove(vehicle);
             System.out.println("Successfully deleted vehicle");
             return true;
@@ -70,11 +64,34 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
     @Override
     public void printList() {
-
+        Collections.sort(vehicleList, new MakeComparator());
+        System.out.printf("%-30s %-15s %n", "Plate number", "Type");
+        System.out.println("-------------------------------------------------------------");
+        for (Vehicle item : getVehicleList()) {
+            System.out.printf("%-30s %-15s %n", item.getPlateNo(), item.getType());
+        }
     }
 
     @Override
     public boolean save() {
-        return false;
+        try {
+            FileWriter fw = new FileWriter("output.csv");
+            fw.write("Plate number,Vehicle type,Make,Model,Daily rental\n");
+            for (Vehicle item : getVehicleList()) {
+                fw.write(item.getPlateNo() + "," + item.getType() + "," + item.getMake() + "," + item.getModel() + "," + item.getDayRental() + "\n");
+            }
+            fw.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
+
+class MakeComparator implements Comparator<Vehicle> {
+    @Override
+    public int compare(Vehicle o1, Vehicle o2) {
+        return o1.getMake().compareTo(o2.getMake());
     }
 }

@@ -12,12 +12,11 @@ public class Main {
 
         WestminsterRentalVehicleManager manager = new WestminsterRentalVehicleManager();
 
-        Vehicle vehicle = new MotorBike("1234",1000,"Honda", "JuloJulo","Red","Diesel", VehicleType.MOTORBIKE,false,false);
-        manager.deleteVehicle(vehicle);
+        Vehicle vehicle = new MotorBike("9999", 1000, "Audi", "Audi", "Red", "Diesel", VehicleType.MOTORBIKE, false, false);
+        manager.addvehicle(vehicle);
 
-        //for(Vehicle veh : manager.getVehicleList()){
-            System.out.println(manager.getVehicleList());
-        //}
+        manager.printList();
+        manager.save();
 
     }
 }

@@ -8,7 +8,10 @@ import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
-import io.grpc.netty.shaded.io.netty.util.concurrent.SucceededFuture;
+import controllers.Constants;
+import models.Car;
+import models.MotorBike;
+import models.VehicleType;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -73,14 +76,6 @@ public class DatabaseUtil {
         }
     }
 
-    public static boolean updateData(Object data, String path){
-        return false;
-    }
-
-    public static Object getData(String path){
-        return new Object();
-    }
-
     public static List getCollection(String path){
         List objects = new ArrayList();
         db.collection(path).listDocuments().forEach(docRef -> {
@@ -94,9 +89,18 @@ public class DatabaseUtil {
                 e.printStackTrace();
             }
             if (document.exists()) {
-                objects.add(document.toObject(Object.class));
+                if (path.equals(Constants.VEHICLES)) {
+                    if (document.getData().get(Constants.TYPE).equals(VehicleType.CAR.toString())) {
+                        objects.add(document.toObject(Car.class));
+                    } else if (document.getData().get(Constants.TYPE).equals(VehicleType.MOTORBIKE.toString())) {
+                        objects.add(document.toObject(MotorBike.class));
+                    }
+                } else {
+                    objects.add(document.toObject(Object.class));
+                }
             }
         });
         return objects;
     }
+
 }

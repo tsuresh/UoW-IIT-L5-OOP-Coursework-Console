@@ -8,6 +8,9 @@ public class Car extends Vehicle {
     private boolean hasAC;
     private String bodyType;
 
+    public Car() {
+    }
+
     public Car(String plateNo, double dayRental, String make, String model, String color, String fuelType, VehicleType type, int noOfDoors, int noOfWindows, boolean hasAC, String bodyType) {
         super(plateNo, dayRental, make, model, color, fuelType, type);
         this.noOfDoors = noOfDoors;

@@ -6,6 +6,9 @@ public class MotorBike extends Vehicle{
     private boolean hasKickStart;
     private boolean hasBumpyTires;
 
+    public MotorBike() {
+    }
+
     public MotorBike(String plateNo, double dayRental, String make, String model, String color, String fuelType, VehicleType type, boolean hasKickStart, boolean hasBumpyTires) {
         super(plateNo, dayRental, make, model, color, fuelType, type);
         this.hasKickStart = hasKickStart;

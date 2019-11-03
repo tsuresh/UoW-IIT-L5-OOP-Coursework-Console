@@ -15,6 +15,9 @@ public abstract class Vehicle {
     protected ScheduleList scheduleList;
     protected VehicleType type;
 
+    public Vehicle() {
+    }
+
     public Vehicle(String plateNo, double dayRental, String make, String model, String color, String fuelType, VehicleType type) {
         this.plateNo = plateNo;
         this.dayRental = dayRental;
