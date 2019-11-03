@@ -81,6 +81,7 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
                 fw.write(item.getPlateNo() + "," + item.getType() + "," + item.getMake() + "," + item.getModel() + "," + item.getDayRental() + "\n");
             }
             fw.close();
+            System.out.println("Successfully saved to output.csv");
             return true;
         } catch (IOException e) {
             e.printStackTrace();
