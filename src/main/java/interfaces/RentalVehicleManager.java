@@ -8,7 +8,7 @@ public interface RentalVehicleManager {
 
     boolean addvehicle(Vehicle vehicle);
 
-    boolean deleteVehicle(Vehicle vehicle);
+    boolean deleteVehicle(String plateNo);
 
     void printList();
 

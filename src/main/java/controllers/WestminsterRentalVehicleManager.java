@@ -51,7 +51,8 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
     }
 
     @Override
-    public boolean deleteVehicle(Vehicle vehicle) {
+    public boolean deleteVehicle(String plateNo) {
+        Vehicle vehicle = searchVehicle(plateNo);
         if (DatabaseUtil.deleteData(Constants.VEHICLES, vehicle.getPlateNo())) {
             vehicleList.remove(vehicle);
             System.out.println("Successfully deleted vehicle");
@@ -87,6 +88,15 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private Vehicle searchVehicle(String plateNo) {
+        for (Vehicle vehicle : vehicleList) {
+            if (vehicle.getPlateNo().equalsIgnoreCase(plateNo)) {
+                return vehicle;
+            }
+        }
+        return null;
     }
 }
 
