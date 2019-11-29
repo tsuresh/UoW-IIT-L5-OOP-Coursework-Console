@@ -4,13 +4,14 @@ import javax.persistence.Entity;
 
 @Entity
 public class BookingBody {
-    private String plateNumber, dateFrom, dateTo, fullName, contactNumber, address;
+    private String bookingId, plateNumber, dateFrom, dateTo, fullName, contactNumber, address;
     private boolean isVerified;
 
     public BookingBody() {
     }
 
-    public BookingBody(String plateNumber, String dateFrom, String dateTo, String fullName, String contactNumber, String address, boolean isVerified) {
+    public BookingBody(String bookingId, String plateNumber, String dateFrom, String dateTo, String fullName, String contactNumber, String address, boolean isVerified) {
+        this.bookingId = bookingId;
         this.plateNumber = plateNumber;
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
@@ -18,6 +19,14 @@ public class BookingBody {
         this.contactNumber = contactNumber;
         this.address = address;
         this.isVerified = isVerified;
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
     public String getPlateNumber() {
@@ -66,6 +75,14 @@ public class BookingBody {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
     }
 
     public boolean getIsVerified() {

@@ -72,6 +72,19 @@ public class DatabaseUtil {
         }
     }
 
+    public static DocumentSnapshot getDocument(String path, String docID) {
+        ApiFuture<DocumentSnapshot> future = db.collection(path).document(docID).get();
+        DocumentSnapshot snapshot = null;
+        try {
+            snapshot = future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return snapshot;
+    }
+
     public static List<DocumentSnapshot> getCollection(String path) {
         List<DocumentSnapshot> objects = new ArrayList();
         db.collection(path).listDocuments().forEach(docRef -> {
