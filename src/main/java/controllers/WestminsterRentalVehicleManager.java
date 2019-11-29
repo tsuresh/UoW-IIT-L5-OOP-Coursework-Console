@@ -2,6 +2,7 @@ package controllers;
 
 import interfaces.RentalVehicleManager;
 import models.Vehicle;
+import server.VehicleController;
 import utils.DatabaseUtil;
 
 import java.io.FileWriter;
@@ -30,7 +31,7 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
     private boolean syncDB() {
         try {
-            setVehicleList(DatabaseUtil.getCollection(Constants.VEHICLES));
+            setVehicleList(VehicleController.getVehiclesList());
             return true;
         } catch (Exception e) {
             e.printStackTrace();
