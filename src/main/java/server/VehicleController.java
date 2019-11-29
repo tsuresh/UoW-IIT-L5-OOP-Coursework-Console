@@ -24,7 +24,7 @@ public class VehicleController {
     private static final String TAG = "VehicleController";
     Logger logger = LoggerFactory.getLogger(Application.class);
 
-    @GetMapping("/")
+    @GetMapping("")
     public static List<Vehicle> getVehiclesList() {
         List<Vehicle> vehicleList = new ArrayList<>();
         for (DocumentSnapshot document : DatabaseUtil.getCollection(Constants.VEHICLES)) {

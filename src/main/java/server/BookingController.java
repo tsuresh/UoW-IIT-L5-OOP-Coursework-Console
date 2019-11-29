@@ -32,12 +32,12 @@ public class BookingController {
         return schedules;
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public Response makeBooking(@RequestBody BookingBody bookingBody) {
         return manageBooking(bookingBody, "");
     }
 
-    @PutMapping("/")
+    @PutMapping("")
     public Response updateBooking(@RequestBody BookingBody bookingBody) {
         if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
             return new Response(Constants.ERROR, "THe booking ID must not be empty!");
@@ -45,7 +45,7 @@ public class BookingController {
         return manageBooking(bookingBody, bookingBody.getBookingId());
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping("")
     public Response deleteBooking(@RequestBody BookingBody bookingBody) {
         if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
             return new Response(Constants.ERROR, "THe booking ID must not be empty!");
