@@ -6,6 +6,7 @@ import models.Schedule;
 import org.springframework.web.bind.annotation.*;
 import utils.DatabaseUtil;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,9 +15,26 @@ import java.util.List;
 @RequestMapping("/api/v1/bookings")
 public class BookingController {
 
-    @PostMapping("/isBooked")
-    public Response isBooked(@RequestBody BookingBody bookingBody) {
-        return getAvailability(bookingBody.getPlateNumber(), bookingBody.getDateFrom(), bookingBody.getDateTo());
+    public static Response getAvailability(String plateNumber, String fromDate, String toDate) {
+        Date dateFrom = null, dateTo = null;
+        try {
+            dateFrom = new Date(fromDate);
+            dateTo = new Date(toDate);
+        } catch (Exception e) {
+            return new Response(Constants.ERROR, e.getMessage());
+        }
+        long fromDateTimestamp = dateFrom.getTime();
+        long toDateTimestamp = dateTo.getTime();
+        for (DocumentSnapshot document : DatabaseUtil.getCollection(Constants.VEHICLES + "/" + plateNumber + "/scheduleList")) {
+            Schedule schedule = document.toObject(Schedule.class);
+            if (fromDateTimestamp <= schedule.getDateFrom() && schedule.getDateFrom() <= toDateTimestamp) {
+                return new Response(Constants.ERROR, "An existing booking clases with your date range");
+            }
+            if (fromDateTimestamp <= schedule.getDateTo() && schedule.getDateTo() <= toDateTimestamp) {
+                return new Response(Constants.ERROR, "An existing booking clases with your date range");
+            }
+        }
+        return new Response(Constants.SUCCESS, "The vehicle is available for booking");
     }
 
     @GetMapping("/{vehicleID}")
@@ -29,29 +47,25 @@ public class BookingController {
         return schedules;
     }
 
+    @PostMapping("/isBooked")
+    public Response isBooked(@Valid @RequestBody AvailabilityBody availabilityBody) {
+        if (availabilityBody.getPlateNumber() == null || availabilityBody.getPlateNumber().isEmpty()) {
+            return new Response(Constants.ERROR, "Plate number must be there");
+        }
+        return getAvailability(availabilityBody.getPlateNumber(), availabilityBody.getDateFrom(), availabilityBody.getDateTo());
+    }
+
     @PostMapping("")
-    public Response makeBooking(@RequestBody BookingBody bookingBody) {
+    public Response makeBooking(@Valid @RequestBody BookingBody bookingBody) {
         return manageBooking(bookingBody, "");
     }
 
     @PutMapping("")
-    public Response updateBooking(@RequestBody BookingBody bookingBody) {
+    public Response updateBooking(@Valid @RequestBody BookingBody bookingBody) {
         if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
             return new Response(Constants.ERROR, "THe booking ID must not be empty!");
         }
         return manageBooking(bookingBody, bookingBody.getBookingId());
-    }
-
-    @DeleteMapping("")
-    public Response deleteBooking(@RequestBody BookingBody bookingBody) {
-        if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
-            return new Response(Constants.ERROR, "THe booking ID must not be empty!");
-        }
-        if (DatabaseUtil.deleteData(Constants.VEHICLES + "/" + bookingBody.getPlateNumber() + "/scheduleList", bookingBody.getBookingId())) {
-            return new Response("SUCCESS", "Successfully deleted");
-        } else {
-            return new Response("FAILED", "Unable to delete booking");
-        }
     }
 
     private Response manageBooking(BookingBody bookingBody, String bookingID) {
@@ -87,25 +101,15 @@ public class BookingController {
         }
     }
 
-    private Response getAvailability(String plateNumber, String fromDate, String toDate) {
-        Date dateFrom = null, dateTo = null;
-        try {
-            dateFrom = new Date(fromDate);
-            dateTo = new Date(toDate);
-        } catch (Exception e) {
-            return new Response(Constants.ERROR, e.getMessage());
+    @DeleteMapping("")
+    public Response deleteBooking(@Valid @RequestBody BookingBody bookingBody) {
+        if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
+            return new Response(Constants.ERROR, "THe booking ID must not be empty!");
         }
-        long fromDateTimestamp = dateFrom.getTime();
-        long toDateTimestamp = dateTo.getTime();
-        for (DocumentSnapshot document : DatabaseUtil.getCollection(Constants.VEHICLES + "/" + plateNumber + "/scheduleList")) {
-            Schedule schedule = document.toObject(Schedule.class);
-            if (fromDateTimestamp <= schedule.getDateFrom() && schedule.getDateFrom() <= toDateTimestamp) {
-                return new Response(Constants.ERROR, "An existing booking clases with your date range");
-            }
-            if (fromDateTimestamp <= schedule.getDateTo() && schedule.getDateTo() <= toDateTimestamp) {
-                return new Response(Constants.ERROR, "An existing booking clases with your date range");
-            }
+        if (DatabaseUtil.deleteData(Constants.VEHICLES + "/" + bookingBody.getPlateNumber() + "/scheduleList", bookingBody.getBookingId())) {
+            return new Response("SUCCESS", "Successfully deleted");
+        } else {
+            return new Response("FAILED", "Unable to delete booking");
         }
-        return new Response(Constants.SUCCESS, "The vehicle is available for booking");
     }
 }

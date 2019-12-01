@@ -15,8 +15,11 @@ public class BookingBody {
     private String dateFrom;
     @NotNull(message = "Drop date is required")
     private String dateTo;
+    @NotNull(message = "Full name is required")
     private String fullName;
+    @NotNull(message = "Contact number is required")
     private String contactNumber;
+    @NotNull(message = "Address is required")
     private String address;
     private boolean isVerified;
 

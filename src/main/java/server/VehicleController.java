@@ -35,6 +35,18 @@ public class VehicleController {
         return vehicleList;
     }
 
+    @GetMapping("/available")
+    public static List<Vehicle> getAvailableVehiclesList(@Valid @RequestBody AvailabilityBody availabilityBody) {
+        List<Vehicle> vehicleList = new ArrayList<>();
+        for (Vehicle vehicle : getVehiclesList()) {
+            Response availabilityResponse = BookingController.getAvailability(vehicle.getPlateNo(), availabilityBody.getDateFrom(), availabilityBody.getDateTo());
+            if (availabilityResponse.getMessage().equals(Constants.SUCCESS)) {
+                vehicleList.add(vehicle);
+            }
+        }
+        return vehicleList;
+    }
+
     @PostMapping("/addCar")
     public static Response addCar(@Valid @RequestBody Car car) {
         if (DatabaseUtil.addData(car, Constants.VEHICLES, car.getPlateNo())) {
