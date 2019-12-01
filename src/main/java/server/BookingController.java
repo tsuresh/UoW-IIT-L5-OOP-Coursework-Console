@@ -42,6 +42,7 @@ public class BookingController {
         List<Schedule> schedules = new ArrayList<>();
         for (DocumentSnapshot document : DatabaseUtil.getCollection(Constants.VEHICLES + "/" + vehicleID + "/scheduleList")) {
             Schedule schedule = document.toObject(Schedule.class);
+            schedule.setBookingId(document.getId());
             schedules.add(schedule);
         }
         return schedules;
@@ -57,7 +58,12 @@ public class BookingController {
 
     @PostMapping("")
     public Response makeBooking(@Valid @RequestBody BookingBody bookingBody) {
-        return manageBooking(bookingBody, "");
+        Response availabilityResponse = getAvailability(bookingBody.getPlateNumber(), bookingBody.getDateFrom(), bookingBody.getDateTo());
+        if (availabilityResponse.getMessage().equals(Constants.SUCCESS)) {
+            return manageBooking(bookingBody, "");
+        } else {
+            return availabilityResponse;
+        }
     }
 
     @PutMapping("")
@@ -65,7 +71,21 @@ public class BookingController {
         if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
             return new Response(Constants.ERROR, "THe booking ID must not be empty!");
         }
-        return manageBooking(bookingBody, bookingBody.getBookingId());
+        Response availabilityResponse = getAvailability(bookingBody.getPlateNumber(), bookingBody.getDateFrom(), bookingBody.getDateTo());
+        if (availabilityResponse.getMessage().equals(Constants.SUCCESS)) {
+            return manageBooking(bookingBody, bookingBody.getBookingId());
+        } else {
+            return availabilityResponse;
+        }
+    }
+
+    @DeleteMapping("/{plateNumber}/{bookingId}")
+    public Response deleteBooking(@PathVariable String plateNumber, @PathVariable String bookingId) {
+        if (DatabaseUtil.deleteData(Constants.VEHICLES + "/" + plateNumber + "/scheduleList", bookingId)) {
+            return new Response("SUCCESS", "Successfully deleted");
+        } else {
+            return new Response("FAILED", "Unable to delete booking");
+        }
     }
 
     private Response manageBooking(BookingBody bookingBody, String bookingID) {
@@ -98,18 +118,6 @@ public class BookingController {
             } else {
                 return new Response(Constants.ERROR, "Failed to update the booking");
             }
-        }
-    }
-
-    @DeleteMapping("")
-    public Response deleteBooking(@Valid @RequestBody BookingBody bookingBody) {
-        if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
-            return new Response(Constants.ERROR, "THe booking ID must not be empty!");
-        }
-        if (DatabaseUtil.deleteData(Constants.VEHICLES + "/" + bookingBody.getPlateNumber() + "/scheduleList", bookingBody.getBookingId())) {
-            return new Response("SUCCESS", "Successfully deleted");
-        } else {
-            return new Response("FAILED", "Unable to delete booking");
         }
     }
 }

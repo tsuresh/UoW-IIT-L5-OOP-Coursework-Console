@@ -2,10 +2,10 @@ package models;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Objects;
 
 public class Schedule implements Serializable {
 
+    private String bookingId;
     @NotNull(message = "Address is required")
     private String address;
     private boolean isVerified;
@@ -21,13 +21,31 @@ public class Schedule implements Serializable {
     public Schedule() {
     }
 
-    public Schedule(String address, boolean isVerified, String contactNumber, long dateTo, String fullName, long dateFrom) {
+    public Schedule(@NotNull(message = "Address is required") String address, boolean isVerified, @NotNull(message = "Contact number is required") String contactNumber, @NotNull(message = "Drop date is required") long dateTo, @NotNull(message = "Your name is required") String fullName, @NotNull(message = "Pickup date is required") long dateFrom) {
         this.address = address;
         this.isVerified = isVerified;
         this.contactNumber = contactNumber;
         this.dateTo = dateTo;
         this.fullName = fullName;
         this.dateFrom = dateFrom;
+    }
+
+    public Schedule(String bookingId, @NotNull(message = "Address is required") String address, boolean isVerified, @NotNull(message = "Contact number is required") String contactNumber, @NotNull(message = "Drop date is required") long dateTo, @NotNull(message = "Your name is required") String fullName, @NotNull(message = "Pickup date is required") long dateFrom) {
+        this.bookingId = bookingId;
+        this.address = address;
+        this.isVerified = isVerified;
+        this.contactNumber = contactNumber;
+        this.dateTo = dateTo;
+        this.fullName = fullName;
+        this.dateFrom = dateFrom;
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
     public String getAddress() {
@@ -38,12 +56,12 @@ public class Schedule implements Serializable {
         this.address = address;
     }
 
-    public boolean getIsVerified() {
+    public boolean isVerified() {
         return isVerified;
     }
 
-    public void setIsVerified(boolean verified) {
-        this.isVerified = verified;
+    public void setVerified(boolean verified) {
+        isVerified = verified;
     }
 
     public String getContactNumber() {
@@ -76,35 +94,5 @@ public class Schedule implements Serializable {
 
     public void setDateFrom(long dateFrom) {
         this.dateFrom = dateFrom;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Schedule schedule = (Schedule) o;
-        return isVerified == schedule.isVerified &&
-                dateTo == schedule.dateTo &&
-                dateFrom == schedule.dateFrom &&
-                Objects.equals(address, schedule.address) &&
-                Objects.equals(contactNumber, schedule.contactNumber) &&
-                Objects.equals(fullName, schedule.fullName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(address, isVerified, contactNumber, dateTo, fullName, dateFrom);
-    }
-
-    @Override
-    public String toString() {
-        return "Schedule{" +
-                "address='" + address + '\'' +
-                ", isVerified=" + isVerified +
-                ", contactNumber='" + contactNumber + '\'' +
-                ", dateTo=" + dateTo +
-                ", fullName='" + fullName + '\'' +
-                ", dateFrom=" + dateFrom +
-                '}';
     }
 }

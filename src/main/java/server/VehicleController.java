@@ -75,4 +75,13 @@ public class VehicleController {
         }
     }
 
+    @DeleteMapping("/{plateNumber}")
+    public static Response deleteVehicle(@PathVariable String plateNumber) {
+        if (DatabaseUtil.deleteData(Constants.VEHICLES, plateNumber)) {
+            return new Response("SUCCESS", "Successfully deleted");
+        } else {
+            return new Response("FAILED", "Unable to delete booking");
+        }
+    }
+
 }

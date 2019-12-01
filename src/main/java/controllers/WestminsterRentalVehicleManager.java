@@ -1,7 +1,11 @@
 package controllers;
 
 import interfaces.RentalVehicleManager;
+import models.Car;
+import models.MotorBike;
 import models.Vehicle;
+import models.VehicleType;
+import server.Response;
 import server.VehicleController;
 import utils.DatabaseUtil;
 
@@ -41,12 +45,20 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
     @Override
     public boolean addvehicle(Vehicle vehicle) {
-        if (DatabaseUtil.addData(vehicle, Constants.VEHICLES, vehicle.getPlateNo())) {
-            vehicleList.add(vehicle);
-            System.out.println("Successfully added vehicle");
-            return true;
-        } else {
-            System.out.println("Failed adding a new vehicle to the database");
+        if (vehicle.getType().equals(VehicleType.CAR)) {
+            Response addResp = VehicleController.addCar((Car) vehicle);
+            System.out.println(addResp.getDetail());
+            if (addResp.getMessage().equals(Constants.SUCCESS)) {
+                vehicleList.add(vehicle);
+                return true;
+            }
+        } else if (vehicle.getType().equals(VehicleType.MOTORBIKE)) {
+            Response addResp = VehicleController.addMotorbike((MotorBike) vehicle);
+            System.out.println(addResp.getDetail());
+            if (addResp.getMessage().equals(Constants.SUCCESS)) {
+                vehicleList.add(vehicle);
+                return true;
+            }
         }
         return false;
     }
@@ -54,12 +66,11 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
     @Override
     public boolean deleteVehicle(String plateNo) {
         Vehicle vehicle = searchVehicle(plateNo);
-        if (DatabaseUtil.deleteData(Constants.VEHICLES, vehicle.getPlateNo())) {
+        Response deleteResp = VehicleController.deleteVehicle(plateNo);
+        System.out.println(deleteResp.getDetail());
+        if (deleteResp.getMessage().equals(Constants.SUCCESS)) {
             vehicleList.remove(vehicle);
-            System.out.println("Successfully deleted vehicle");
             return true;
-        } else {
-            System.out.println("Unable to delete vehicle");
         }
         return false;
     }
