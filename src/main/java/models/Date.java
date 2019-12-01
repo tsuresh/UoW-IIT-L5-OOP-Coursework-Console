@@ -1,7 +1,14 @@
 package models;
 
+import javax.validation.constraints.NotNull;
+
 public class Date {
-    private int day, month, year;
+    @NotNull(message = "Day is required")
+    private int day;
+    @NotNull(message = "Month is required")
+    private int month;
+    @NotNull(message = "Year is required")
+    private int year;
 
     public Date(int day, int month, int year) {
         this.day = day;

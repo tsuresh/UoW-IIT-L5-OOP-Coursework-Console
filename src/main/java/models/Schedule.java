@@ -1,15 +1,21 @@
 package models;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class Schedule implements Serializable {
 
+    @NotNull(message = "Address is required")
     private String address;
     private boolean isVerified;
+    @NotNull(message = "Contact number is required")
     private String contactNumber;
+    @NotNull(message = "Drop date is required")
     private long dateTo;
+    @NotNull(message = "Your name is required")
     private String fullName;
+    @NotNull(message = "Pickup date is required")
     private long dateFrom;
 
     public Schedule() {

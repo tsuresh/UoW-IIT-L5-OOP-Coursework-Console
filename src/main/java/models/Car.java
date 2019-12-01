@@ -1,11 +1,18 @@
 package models;
 
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Entity
 public class Car extends Vehicle {
+    @NotNull(message = "Number of doors are required")
     private int noOfDoors;
+    @NotNull(message = "Number of windows are required")
     private int noOfWindows;
+    @NotNull(message = "AC availability is required")
     private boolean hasAC;
+    @NotNull(message = "Body type is required")
     private String bodyType;
 
     public Car() {

@@ -3,23 +3,28 @@ package models;
 import controllers.ScheduleList;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
 public abstract class Vehicle {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @NotNull(message = "Plate number is required")
     protected String plateNo;
+    @NotNull(message = "Day rental is required")
     protected double dayRental;
+    @NotNull(message = "Vehicle make is mandatory")
     protected String make;
+    @NotNull(message = "Vehicle model is mandatory")
     protected String model;
+    @NotNull(message = "Vehicle color is mandatory")
     protected String color;
+    @NotNull(message = "Fuel type is mandatory")
     protected String fuelType;
     protected ScheduleList scheduleList;
+    @NotNull(message = "Vehicle type is mandatory")
     protected VehicleType type;
 
     public Vehicle() {

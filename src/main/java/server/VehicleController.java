@@ -8,12 +8,10 @@ import models.Vehicle;
 import models.VehicleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import utils.DatabaseUtil;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +33,24 @@ public class VehicleController {
             }
         }
         return vehicleList;
+    }
+
+    @PostMapping("/addCar")
+    public static Response addCar(@Valid @RequestBody Car car) {
+        if (DatabaseUtil.addData(car, Constants.VEHICLES, car.getPlateNo())) {
+            return new Response("SUCCESS", "Successfully added the vehicle");
+        } else {
+            return new Response("ERROR", "Failed adding the vehicle");
+        }
+    }
+
+    @PostMapping("/addMotorbike")
+    public static Response addMotorbike(@Valid @RequestBody MotorBike motorBike) {
+        if (DatabaseUtil.addData(motorBike, Constants.VEHICLES, motorBike.getPlateNo())) {
+            return new Response("SUCCESS", "Successfully added the vehicle");
+        } else {
+            return new Response("ERROR", "Failed adding the vehicle");
+        }
     }
 
     @GetMapping("/{vehicleID}")

@@ -1,10 +1,23 @@
 package server;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class BookingBody {
-    private String bookingId, plateNumber, dateFrom, dateTo, fullName, contactNumber, address;
+
+    @Id
+    private String bookingId;
+    @NotNull(message = "Plate number required")
+    private String plateNumber;
+    @NotNull(message = "Pickup date is required")
+    private String dateFrom;
+    @NotNull(message = "Drop date is required")
+    private String dateTo;
+    private String fullName;
+    private String contactNumber;
+    private String address;
     private boolean isVerified;
 
     public BookingBody() {

@@ -1,9 +1,15 @@
 package models;
 
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+@Entity
 public class MotorBike extends Vehicle{
+
+    @NotNull(message = "Kick start availability is required")
     private boolean hasKickStart;
+    @NotNull(message = "Bumpy tires availability is required")
     private boolean hasBumpyTires;
 
     public MotorBike() {
