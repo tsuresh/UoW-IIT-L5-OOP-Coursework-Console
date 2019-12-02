@@ -50,14 +50,14 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
     @Override
     public boolean addvehicle(Vehicle vehicle) {
         if (vehicleList.size() < MAX_COUNT) {
-            if (vehicle.getType().equals(VehicleType.CAR)) {
+            if (vehicle.getType().equals(VehicleType.CAR) && vehicle instanceof Car) {
                 ResponseEntity<Response> addResp = VehicleController.addCar((Car) vehicle);
                 System.out.println(addResp.getBody().getDetail());
                 if (addResp.getBody().getMessage().equals(Constants.SUCCESS)) {
                     vehicleList.add(vehicle);
                     return true;
                 }
-            } else if (vehicle.getType().equals(VehicleType.MOTORBIKE)) {
+            } else if (vehicle.getType().equals(VehicleType.MOTORBIKE) && vehicle instanceof MotorBike) {
                 ResponseEntity<Response> addResp = VehicleController.addMotorbike((MotorBike) vehicle);
                 System.out.println(addResp.getBody().getDetail());
                 if (addResp.getBody().getMessage().equals(Constants.SUCCESS)) {

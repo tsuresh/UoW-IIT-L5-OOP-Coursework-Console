@@ -6,8 +6,7 @@ import models.VehicleType;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AddVehicleTest {
 
@@ -22,10 +21,8 @@ public class AddVehicleTest {
 
     @Test
     public void addCarOfNonType() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Vehicle vehicle = new Car("0000", 1500, "Test_Audi", "Test_A3", "Black", "Diesel", VehicleType.MOTORBIKE, 4, 4, true, "Car");
-            manager.addvehicle(vehicle);
-        });
+        Vehicle vehicle = new Car("0000", 1500, "Test_Audi", "Test_A3", "Black", "Diesel", VehicleType.MOTORBIKE, 4, 4, true, "Car");
+        assertFalse(manager.addvehicle(vehicle));
     }
 
     @Test
@@ -36,10 +33,8 @@ public class AddVehicleTest {
 
     @Test
     public void addMotorBikeofNonType() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Vehicle vehicle = new MotorBike("0000", 1000, "Honda", "CT100", "Red", "Petrol", VehicleType.CAR, true, true);
-            manager.addvehicle(vehicle);
-        });
+        Vehicle vehicle = new MotorBike("0000", 1000, "Honda", "CT100", "Red", "Petrol", VehicleType.CAR, true, true);
+        assertFalse(manager.addvehicle(vehicle));
     }
 
     @Test

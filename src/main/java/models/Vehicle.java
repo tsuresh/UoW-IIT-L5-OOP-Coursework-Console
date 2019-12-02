@@ -122,14 +122,6 @@ public abstract class Vehicle {
         this.type = type;
     }
 
-    public double calculateRent(){
-        return 0;
-    }
-
-    public boolean isAvailable(Date date1, Date date2){
-        return false;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

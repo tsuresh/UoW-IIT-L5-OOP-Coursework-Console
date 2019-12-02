@@ -6,8 +6,6 @@ import models.Car;
 import models.MotorBike;
 import models.Vehicle;
 import models.VehicleType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +21,6 @@ import java.util.List;
 public class VehicleController {
 
     private static final String TAG = "VehicleController";
-    Logger logger = LoggerFactory.getLogger(Application.class);
 
     @GetMapping("")
     public static List<Vehicle> getVehiclesList() {
@@ -38,7 +35,7 @@ public class VehicleController {
         return vehicleList;
     }
 
-    @GetMapping("/available")
+    @PostMapping("/available")
     public static List<Vehicle> getAvailableVehiclesList(@Valid @RequestBody AvailabilityBody availabilityBody) {
         List<Vehicle> vehicleList = new ArrayList<>();
         for (Vehicle vehicle : getVehiclesList()) {

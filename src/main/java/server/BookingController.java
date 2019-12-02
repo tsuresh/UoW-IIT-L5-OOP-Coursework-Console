@@ -18,6 +18,8 @@ import java.util.List;
 @RequestMapping("/api/v1/bookings")
 public class BookingController {
 
+    private static final String TAG = "BookingController";
+
     public static ResponseEntity<Response> getAvailability(String plateNumber, String fromDate, String toDate) {
         Date dateFrom = null, dateTo = null;
         try {
