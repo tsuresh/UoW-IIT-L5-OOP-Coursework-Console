@@ -5,6 +5,7 @@ import models.Car;
 import models.MotorBike;
 import models.Vehicle;
 import models.VehicleType;
+import org.springframework.http.ResponseEntity;
 import server.Response;
 import server.VehicleController;
 import utils.DatabaseUtil;
@@ -50,16 +51,16 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
     public boolean addvehicle(Vehicle vehicle) {
         if (vehicleList.size() < MAX_COUNT) {
             if (vehicle.getType().equals(VehicleType.CAR)) {
-                Response addResp = VehicleController.addCar((Car) vehicle);
-                System.out.println(addResp.getDetail());
-                if (addResp.getMessage().equals(Constants.SUCCESS)) {
+                ResponseEntity<Response> addResp = VehicleController.addCar((Car) vehicle);
+                System.out.println(addResp.getBody().getDetail());
+                if (addResp.getBody().getMessage().equals(Constants.SUCCESS)) {
                     vehicleList.add(vehicle);
                     return true;
                 }
             } else if (vehicle.getType().equals(VehicleType.MOTORBIKE)) {
-                Response addResp = VehicleController.addMotorbike((MotorBike) vehicle);
-                System.out.println(addResp.getDetail());
-                if (addResp.getMessage().equals(Constants.SUCCESS)) {
+                ResponseEntity<Response> addResp = VehicleController.addMotorbike((MotorBike) vehicle);
+                System.out.println(addResp.getBody().getDetail());
+                if (addResp.getBody().getMessage().equals(Constants.SUCCESS)) {
                     vehicleList.add(vehicle);
                     return true;
                 }
@@ -86,9 +87,9 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
         }
 
         Vehicle vehicle = searchVehicle(plateNo);
-        Response deleteResp = VehicleController.deleteVehicle(plateNo);
-        System.out.println(deleteResp.getDetail());
-        if (deleteResp.getMessage().equals(Constants.SUCCESS)) {
+        ResponseEntity<Response> deleteResp = VehicleController.deleteVehicle(plateNo);
+        System.out.println(deleteResp.getBody().getDetail());
+        if (deleteResp.getBody().getMessage().equals(Constants.SUCCESS)) {
             vehicleList.remove(vehicle);
             return true;
         }

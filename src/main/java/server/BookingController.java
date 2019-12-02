@@ -3,6 +3,8 @@ package server;
 import com.google.cloud.firestore.DocumentSnapshot;
 import controllers.Constants;
 import models.Schedule;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utils.DatabaseUtil;
 
@@ -11,30 +13,31 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/bookings")
 public class BookingController {
 
-    public static Response getAvailability(String plateNumber, String fromDate, String toDate) {
+    public static ResponseEntity<Response> getAvailability(String plateNumber, String fromDate, String toDate) {
         Date dateFrom = null, dateTo = null;
         try {
             dateFrom = new Date(fromDate);
             dateTo = new Date(toDate);
         } catch (Exception e) {
-            return new Response(Constants.ERROR, e.getMessage());
+            return new ResponseEntity(new Response(Constants.ERROR, "Unable to cast the given date"), HttpStatus.BAD_REQUEST);
         }
         long fromDateTimestamp = dateFrom.getTime();
         long toDateTimestamp = dateTo.getTime();
         for (DocumentSnapshot document : DatabaseUtil.getCollection(Constants.VEHICLES + "/" + plateNumber + "/scheduleList")) {
             Schedule schedule = document.toObject(Schedule.class);
             if (fromDateTimestamp <= schedule.getDateFrom() && schedule.getDateFrom() <= toDateTimestamp) {
-                return new Response(Constants.ERROR, "An existing booking clases with your date range");
+                return new ResponseEntity(new Response(Constants.ERROR, "An existing booking clases with your date range"), HttpStatus.CONFLICT);
             }
             if (fromDateTimestamp <= schedule.getDateTo() && schedule.getDateTo() <= toDateTimestamp) {
-                return new Response(Constants.ERROR, "An existing booking clases with your date range");
+                return new ResponseEntity(new Response(Constants.ERROR, "An existing booking clases with your date range"), HttpStatus.CONFLICT);
             }
         }
-        return new Response(Constants.SUCCESS, "The vehicle is available for booking");
+        return new ResponseEntity(new Response(Constants.SUCCESS, "The vehicle is available for booking"), HttpStatus.OK);
     }
 
     @GetMapping("/{vehicleID}")
@@ -49,17 +52,17 @@ public class BookingController {
     }
 
     @PostMapping("/isBooked")
-    public Response isBooked(@Valid @RequestBody AvailabilityBody availabilityBody) {
+    public ResponseEntity<Response> isBooked(@Valid @RequestBody AvailabilityBody availabilityBody) {
         if (availabilityBody.getPlateNumber() == null || availabilityBody.getPlateNumber().isEmpty()) {
-            return new Response(Constants.ERROR, "Plate number must be there");
+            return new ResponseEntity(new Response(Constants.ERROR, "Plate number must be there"), HttpStatus.BAD_REQUEST);
         }
         return getAvailability(availabilityBody.getPlateNumber(), availabilityBody.getDateFrom(), availabilityBody.getDateTo());
     }
 
     @PostMapping("")
-    public Response makeBooking(@Valid @RequestBody BookingBody bookingBody) {
-        Response availabilityResponse = getAvailability(bookingBody.getPlateNumber(), bookingBody.getDateFrom(), bookingBody.getDateTo());
-        if (availabilityResponse.getMessage().equals(Constants.SUCCESS)) {
+    public ResponseEntity<Response> makeBooking(@Valid @RequestBody BookingBody bookingBody) {
+        ResponseEntity<Response> availabilityResponse = getAvailability(bookingBody.getPlateNumber(), bookingBody.getDateFrom(), bookingBody.getDateTo());
+        if (availabilityResponse.getBody().getMessage().equals(Constants.SUCCESS)) {
             return manageBooking(bookingBody, "");
         } else {
             return availabilityResponse;
@@ -67,12 +70,12 @@ public class BookingController {
     }
 
     @PutMapping("")
-    public Response updateBooking(@Valid @RequestBody BookingBody bookingBody) {
+    public ResponseEntity<Response> updateBooking(@Valid @RequestBody BookingBody bookingBody) {
         if (bookingBody.getBookingId() == null || bookingBody.getBookingId().isEmpty()) {
-            return new Response(Constants.ERROR, "THe booking ID must not be empty!");
+            return new ResponseEntity(new Response(Constants.ERROR, "THe booking ID must not be empty!"), HttpStatus.BAD_REQUEST);
         }
-        Response availabilityResponse = getAvailability(bookingBody.getPlateNumber(), bookingBody.getDateFrom(), bookingBody.getDateTo());
-        if (availabilityResponse.getMessage().equals(Constants.SUCCESS)) {
+        ResponseEntity<Response> availabilityResponse = getAvailability(bookingBody.getPlateNumber(), bookingBody.getDateFrom(), bookingBody.getDateTo());
+        if (availabilityResponse.getBody().getMessage().equals(Constants.SUCCESS)) {
             return manageBooking(bookingBody, bookingBody.getBookingId());
         } else {
             return availabilityResponse;
@@ -80,23 +83,23 @@ public class BookingController {
     }
 
     @DeleteMapping("/{plateNumber}/{bookingId}")
-    public Response deleteBooking(@PathVariable String plateNumber, @PathVariable String bookingId) {
+    public ResponseEntity<Response> deleteBooking(@PathVariable String plateNumber, @PathVariable String bookingId) {
         if (DatabaseUtil.deleteData(Constants.VEHICLES + "/" + plateNumber + "/scheduleList", bookingId)) {
-            return new Response("SUCCESS", "Successfully deleted");
+            return new ResponseEntity(new Response("SUCCESS", "Successfully deleted"), HttpStatus.ACCEPTED);
         } else {
-            return new Response("FAILED", "Unable to delete booking");
+            return new ResponseEntity(new Response("FAILED", "Unable to delete booking"), HttpStatus.BAD_REQUEST);
         }
     }
 
-    private Response manageBooking(BookingBody bookingBody, String bookingID) {
+    private ResponseEntity<Response> manageBooking(BookingBody bookingBody, String bookingID) {
         if (bookingBody.getAddress() == null || bookingBody.getAddress().isEmpty()) {
-            return new Response(Constants.ERROR, "Your address must be there");
+            return new ResponseEntity(new Response(Constants.ERROR, "Your address must be there"), HttpStatus.BAD_REQUEST);
         }
         if (bookingBody.getFullName() == null || bookingBody.getFullName().isEmpty()) {
-            return new Response(Constants.ERROR, "Your full name must be there");
+            return new ResponseEntity(new Response(Constants.ERROR, "Your full name must be there"), HttpStatus.BAD_REQUEST);
         }
         if (bookingBody.getContactNumber() == null || bookingBody.getContactNumber().isEmpty()) {
-            return new Response(Constants.ERROR, "Your contact number must be there");
+            return new ResponseEntity(new Response(Constants.ERROR, "Your contact number must be there"), HttpStatus.BAD_REQUEST);
         }
         Schedule schedule = new Schedule(
                 bookingBody.getAddress(),
@@ -108,15 +111,15 @@ public class BookingController {
         );
         if (bookingID.isEmpty()) {
             if (DatabaseUtil.addData(schedule, Constants.VEHICLES + "/" + bookingBody.getPlateNumber() + "/scheduleList")) {
-                return new Response(Constants.SUCCESS, "Successfully made the booking");
+                return new ResponseEntity(new Response(Constants.SUCCESS, "Successfully made the booking"), HttpStatus.CREATED);
             } else {
-                return new Response(Constants.ERROR, "Failed to add new booking");
+                return new ResponseEntity(new Response(Constants.ERROR, "Failed to add new booking"), HttpStatus.BAD_REQUEST);
             }
         } else {
             if (DatabaseUtil.addData(schedule, Constants.VEHICLES + "/" + bookingBody.getPlateNumber() + "/scheduleList", bookingID)) {
-                return new Response(Constants.SUCCESS, "Successfully updated the booking");
+                return new ResponseEntity(new Response(Constants.SUCCESS, "Successfully updated the booking"), HttpStatus.ACCEPTED);
             } else {
-                return new Response(Constants.ERROR, "Failed to update the booking");
+                return new ResponseEntity(new Response(Constants.ERROR, "Failed to update the booking"), HttpStatus.BAD_REQUEST);
             }
         }
     }

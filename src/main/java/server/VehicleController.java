@@ -8,6 +8,8 @@ import models.Vehicle;
 import models.VehicleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utils.DatabaseUtil;
 
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/vehicles")
 public class VehicleController {
@@ -22,6 +25,7 @@ public class VehicleController {
     private static final String TAG = "VehicleController";
     Logger logger = LoggerFactory.getLogger(Application.class);
 
+    @ExceptionHandler(VehicleExceptionHandeler.class)
     @GetMapping("")
     public static List<Vehicle> getVehiclesList() {
         List<Vehicle> vehicleList = new ArrayList<>();
@@ -39,8 +43,8 @@ public class VehicleController {
     public static List<Vehicle> getAvailableVehiclesList(@Valid @RequestBody AvailabilityBody availabilityBody) {
         List<Vehicle> vehicleList = new ArrayList<>();
         for (Vehicle vehicle : getVehiclesList()) {
-            Response availabilityResponse = BookingController.getAvailability(vehicle.getPlateNo(), availabilityBody.getDateFrom(), availabilityBody.getDateTo());
-            if (availabilityResponse.getMessage().equals(Constants.SUCCESS)) {
+            ResponseEntity<Response> availabilityResponse = BookingController.getAvailability(vehicle.getPlateNo(), availabilityBody.getDateFrom(), availabilityBody.getDateTo());
+            if (availabilityResponse.getBody().getMessage().equals(Constants.SUCCESS)) {
                 vehicleList.add(vehicle);
             }
         }
@@ -48,20 +52,20 @@ public class VehicleController {
     }
 
     @PostMapping("/addCar")
-    public static Response addCar(@Valid @RequestBody Car car) {
+    public static ResponseEntity<Response> addCar(@Valid @RequestBody Car car) {
         if (DatabaseUtil.addData(car, Constants.VEHICLES, car.getPlateNo())) {
-            return new Response("SUCCESS", "Successfully added the vehicle");
+            return new ResponseEntity(new Response("SUCCESS", "Successfully added the vehicle"), HttpStatus.OK);
         } else {
-            return new Response("ERROR", "Failed adding the vehicle");
+            return new ResponseEntity(new Response("ERROR", "Failed adding the vehicle"), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/addMotorbike")
-    public static Response addMotorbike(@Valid @RequestBody MotorBike motorBike) {
+    public static ResponseEntity<Response> addMotorbike(@Valid @RequestBody MotorBike motorBike) {
         if (DatabaseUtil.addData(motorBike, Constants.VEHICLES, motorBike.getPlateNo())) {
-            return new Response("SUCCESS", "Successfully added the vehicle");
+            return new ResponseEntity(new Response("SUCCESS", "Successfully added the vehicle"), HttpStatus.OK);
         } else {
-            return new Response("ERROR", "Failed adding the vehicle");
+            return new ResponseEntity(new Response("ERROR", "Failed adding the vehicle"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -76,11 +80,11 @@ public class VehicleController {
     }
 
     @DeleteMapping("/{plateNumber}")
-    public static Response deleteVehicle(@PathVariable String plateNumber) {
+    public static ResponseEntity<Response> deleteVehicle(@PathVariable String plateNumber) {
         if (DatabaseUtil.deleteData(Constants.VEHICLES, plateNumber)) {
-            return new Response("SUCCESS", "Successfully deleted");
+            return new ResponseEntity(new Response("SUCCESS", "Successfully deleted"), HttpStatus.OK);
         } else {
-            return new Response("FAILED", "Unable to delete booking");
+            return new ResponseEntity(new Response("FAILED", "Unable to delete booking"), HttpStatus.BAD_REQUEST);
         }
     }
 
