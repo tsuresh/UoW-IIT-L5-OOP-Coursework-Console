@@ -122,6 +122,15 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
         }
     }
 
+    public void launchGUI() {
+        String url_open = "http://localhost:4200/vehicles";
+        try {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url_open));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private Vehicle searchVehicle(String plateNo) {
         for (Vehicle vehicle : vehicleList) {
             if (vehicle.getPlateNo().equalsIgnoreCase(plateNo)) {

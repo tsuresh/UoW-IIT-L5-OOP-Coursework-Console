@@ -162,7 +162,7 @@ public class Console {
     }
 
     public void displayGUI() {
-        //Launch GUI here
+        manager.launchGUI();
     }
 
 
