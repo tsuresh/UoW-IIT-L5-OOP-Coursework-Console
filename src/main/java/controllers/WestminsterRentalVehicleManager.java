@@ -15,9 +15,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
+    private static final int MAX_COUNT = 50;
     private List<Vehicle> vehicleList = new ArrayList<>();
 
     public WestminsterRentalVehicleManager() {
@@ -45,26 +48,43 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
     @Override
     public boolean addvehicle(Vehicle vehicle) {
-        if (vehicle.getType().equals(VehicleType.CAR)) {
-            Response addResp = VehicleController.addCar((Car) vehicle);
-            System.out.println(addResp.getDetail());
-            if (addResp.getMessage().equals(Constants.SUCCESS)) {
-                vehicleList.add(vehicle);
-                return true;
+        if (vehicleList.size() < MAX_COUNT) {
+            if (vehicle.getType().equals(VehicleType.CAR)) {
+                Response addResp = VehicleController.addCar((Car) vehicle);
+                System.out.println(addResp.getDetail());
+                if (addResp.getMessage().equals(Constants.SUCCESS)) {
+                    vehicleList.add(vehicle);
+                    return true;
+                }
+            } else if (vehicle.getType().equals(VehicleType.MOTORBIKE)) {
+                Response addResp = VehicleController.addMotorbike((MotorBike) vehicle);
+                System.out.println(addResp.getDetail());
+                if (addResp.getMessage().equals(Constants.SUCCESS)) {
+                    vehicleList.add(vehicle);
+                    return true;
+                }
             }
-        } else if (vehicle.getType().equals(VehicleType.MOTORBIKE)) {
-            Response addResp = VehicleController.addMotorbike((MotorBike) vehicle);
-            System.out.println(addResp.getDetail());
-            if (addResp.getMessage().equals(Constants.SUCCESS)) {
-                vehicleList.add(vehicle);
-                return true;
-            }
+        } else {
+            System.out.println("Maximum parking size of " + MAX_COUNT + " has been reached.");
         }
         return false;
     }
 
     @Override
     public boolean deleteVehicle(String plateNo) {
+
+        if (plateNo == null || plateNo.equals("")) {
+            System.out.println("Plate number cannot be blank");
+            return false;
+        }
+
+        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(plateNo);
+        if (m.find()) {
+            System.out.println("You have entered an invalid plate number");
+            return false;
+        }
+
         Vehicle vehicle = searchVehicle(plateNo);
         Response deleteResp = VehicleController.deleteVehicle(plateNo);
         System.out.println(deleteResp.getDetail());

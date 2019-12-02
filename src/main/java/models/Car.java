@@ -6,6 +6,7 @@ import java.util.Objects;
 
 @Entity
 public class Car extends Vehicle {
+
     @NotNull(message = "Number of doors are required")
     private int noOfDoors;
     @NotNull(message = "Number of windows are required")
@@ -21,9 +22,23 @@ public class Car extends Vehicle {
     public Car(String plateNo, double dayRental, String make, String model, String color, String fuelType, VehicleType type, int noOfDoors, int noOfWindows, boolean hasAC, String bodyType) {
         super(plateNo, dayRental, make, model, color, fuelType, type);
         this.noOfDoors = noOfDoors;
+
+        if (this.noOfDoors < 0) {
+            throw new IllegalArgumentException("Doors count has to be greater than or equals to 0");
+        }
+
         this.noOfWindows = noOfWindows;
+
+        if (this.noOfWindows < 0) {
+            throw new IllegalArgumentException("Windows count has to be greater than or equals to 0");
+        }
+
         this.hasAC = hasAC;
         this.bodyType = bodyType;
+
+        if (this.bodyType == null || this.bodyType.equals("")) {
+            throw new IllegalArgumentException("Body type cannot be blank");
+        }
     }
 
     public int getNoOfDoors() {

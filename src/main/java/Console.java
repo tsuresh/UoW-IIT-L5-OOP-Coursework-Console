@@ -3,6 +3,7 @@ import models.Car;
 import models.MotorBike;
 import models.Vehicle;
 import models.VehicleType;
+import utils.InputUtil;
 
 import java.util.Scanner;
 
@@ -34,7 +35,7 @@ public class Console {
         int option = 0;
         do {
             launchMenu();
-            option = (int) inputNumber(1, 8);
+            option = (int) InputUtil.inputNumber(scanner, 1, 8);
             switch (option) {
                 case 1:
                     addVehicle();
@@ -58,43 +59,43 @@ public class Console {
 
     private void addVehicle() {
         System.out.println("Enter the plate number: ");
-        String plateNo = inputText();
+        String plateNo = InputUtil.inputText(scanner);
 
         System.out.println("Enter the day rental: ");
-        double rental = inputNumber();
+        double rental = InputUtil.inputNumber(scanner);
 
         System.out.println("Enter the vehicle make: ");
-        String make = inputText();
+        String make = InputUtil.inputText(scanner);
 
         System.out.println("Enter the vehicle model: ");
-        String model = inputText();
+        String model = InputUtil.inputText(scanner);
 
         System.out.println("Enter the vehicle color: ");
-        String color = inputText();
+        String color = InputUtil.inputText(scanner);
 
         System.out.println("Enter the fuel type: ");
-        String fuelType = inputText();
+        String fuelType = InputUtil.inputText(scanner);
 
         System.out.println("Enter the vehicle type: MOTORBIKE/CAR");
-        String type = inputText();
+        String type = InputUtil.inputText(scanner);
 
         if (type.equalsIgnoreCase("car")) {
 
             System.out.println("Number of doors: ");
-            int doors = (int) inputNumber();
+            int doors = (int) InputUtil.inputNumber(scanner);
 
             System.out.println("Number of windows: ");
-            int windows = (int) inputNumber();
+            int windows = (int) InputUtil.inputNumber(scanner);
 
             System.out.println("Has AC? yes/no: ");
-            String ac = inputText();
+            String ac = InputUtil.inputText(scanner);
             boolean hasAC = false;
             if (ac.equalsIgnoreCase("yes")) {
                 hasAC = true;
             }
 
             System.out.println("Body type: ");
-            String bodyType = inputText();
+            String bodyType = InputUtil.inputText(scanner);
 
             Vehicle vehicle = new Car(
                     plateNo,
@@ -114,14 +115,14 @@ public class Console {
 
         } else if (type.equalsIgnoreCase("motorbike")) {
             System.out.println("Has Kick Start? yes/no: ");
-            String kick = inputText();
+            String kick = InputUtil.inputText(scanner);
             boolean hasKickStart = false;
             if (kick.equalsIgnoreCase("yes")) {
                 hasKickStart = true;
             }
 
             System.out.println("Has Bumpy Tires? yes/no: ");
-            String bumpy = inputText();
+            String bumpy = InputUtil.inputText(scanner);
             boolean hasBumpy = false;
             if (bumpy.equalsIgnoreCase("yes")) {
                 hasBumpy = true;
@@ -148,7 +149,7 @@ public class Console {
 
     private void deleteVehicle() {
         System.out.println("Enter the plate number to delete: ");
-        String plateNo = inputText();
+        String plateNo = InputUtil.inputText(scanner);
         manager.deleteVehicle(plateNo);
     }
 
@@ -164,37 +165,5 @@ public class Console {
         //Launch GUI here
     }
 
-    private double inputNumber(int range1, int range2) {
-        while (true) {
-            try {
-                int option = Integer.parseInt(scanner.nextLine());
-                if (option >= range1 && option <= range2) {
-                    return option;
-                } else {
-                    System.out.println("Please type a number between: " + range1 + "-" + range2);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Given input is not a number.");
-            }
-        }
-    }
 
-    private double inputNumber() {
-        while (true) {
-            try {
-                return Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("You must enter a number");
-            }
-        }
-    }
-
-    private String inputText() {
-        String input = scanner.nextLine();
-        if (input.length() == 0) {
-            System.out.println("Your input cannot be blank");
-            inputText();
-        }
-        return input;
-    }
 }

@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 public abstract class Vehicle {
@@ -32,11 +34,47 @@ public abstract class Vehicle {
 
     public Vehicle(String plateNo, double dayRental, String make, String model, String color, String fuelType, VehicleType type) {
         this.plateNo = plateNo;
+
+        if (this.plateNo == null || this.plateNo.equals("")) {
+            throw new IllegalArgumentException("Plate number cannot be blank");
+        }
+
+        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(this.plateNo);
+        if (m.find()) {
+            throw new IllegalArgumentException("Invalid plate number");
+        }
+
         this.dayRental = dayRental;
+
+        if (this.dayRental < 0) {
+            throw new IllegalArgumentException("Invalid day rental");
+        }
+
         this.make = make;
+
+        if (this.make == null || this.make.equals("")) {
+            throw new IllegalArgumentException("Make cannot be blank");
+        }
+
         this.model = model;
+
+        if (this.model == null || this.model.equals("")) {
+            throw new IllegalArgumentException("Model cannot be blank");
+        }
+
         this.color = color;
+
+        if (this.color == null || this.color.equals("")) {
+            throw new IllegalArgumentException("Color cannot be blank");
+        }
+
         this.fuelType = fuelType;
+
+        if (this.fuelType == null || this.fuelType.equals("")) {
+            throw new IllegalArgumentException("Fuel type cannot be blank");
+        }
+
         this.type = type;
     }
 
