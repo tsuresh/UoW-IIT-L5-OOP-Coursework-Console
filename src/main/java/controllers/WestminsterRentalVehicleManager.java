@@ -73,19 +73,16 @@ public class WestminsterRentalVehicleManager implements RentalVehicleManager {
 
     @Override
     public boolean deleteVehicle(String plateNo) {
-
         if (plateNo == null || plateNo.equals("")) {
             System.out.println("Plate number cannot be blank");
             return false;
         }
-
         Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(plateNo);
         if (m.find()) {
             System.out.println("You have entered an invalid plate number");
             return false;
         }
-
         Vehicle vehicle = searchVehicle(plateNo);
         ResponseEntity<Response> deleteResp = VehicleController.deleteVehicle(plateNo);
         System.out.println(deleteResp.getBody().getDetail());

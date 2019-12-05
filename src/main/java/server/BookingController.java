@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+@CrossOrigin(origins = "https://tsuresh.github.io", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1/bookings")
 public class BookingController {
